@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 
-from inference import prediction, chat_gpt
+from inference import prediction #, chat_gpt
 
 app = Flask(__name__)
 
