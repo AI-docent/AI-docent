@@ -71,26 +71,32 @@
     <script>
         // Sample artwork data
         const artworks = [
-            { id: 1, title: "Mona Lisa", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdrKqwzNETt2r1JHU7vTFNHDTzuuLPNJoxgg&s", instructions: "설리 윙으로 들어가세요.\n 티켓 검사를 마친 후 직진하세요. \n Pavillon de l'Horloge 입구에 도착하면 오른쪽 계단을 타고 1층으로 올라가세요.\n 계단 꼭대기에 도착하면 오른쪽에 있는 이중 나무 문을 통과하세요.\n 당신은 Salle des Cariatides에 있습니다. \n뒤를 돌아보면 문 위에 있는 음악가들의 갤러리가 보입니다." },
-            { id: 2, title: "The Birth of Venus", image: "https://cdn.pixabay.com/photo/2016/09/11/18/04/venus-1664199_1280.jpg", instructions: "넓은 계단을 내려가세요." },
-            { id: 3, title: "Starry Night", image: "https://cdn.pixabay.com/photo/2015/12/01/19/48/starry-night-1076125_1280.jpg", instructions: "방 중앙에 있는 두 개의 큰 남성 조각상으로 올라가 보세요." }
+            { id: 0, title: "Mona Lisa", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdrKqwzNETt2r1JHU7vTFNHDTzuuLPNJoxgg&s", instructions: "설리 윙으로 들어가세요.<br>티켓 검사를 마친 후 직진하세요.<br>Pavillon de l'Horloge 입구에 도착하면 오른쪽 계단을 타고 1층으로 올라가세요.<br>계단 꼭대기에 도착하면 오른쪽에 있는 이중 나무 문을 통과하세요.<br>당신은 Salle des Cariatides에 있습니다.<br>뒤를 돌아보면 문 위에 있는 음악가들의 갤러리가 보입니다." },
+            { id: 1, title: "The Birth of Venus", image: "https://cdn.pixabay.com/photo/2016/09/11/18/04/venus-1664199_1280.jpg", instructions: "넓은 계단을 내려가세요." },
+            { id: 2, title: "Starry Night", image: "https://cdn.pixabay.com/photo/2015/12/01/19/48/starry-night-1076125_1280.jpg", instructions: "방 중앙에 있는 두 개의 큰 남성 조각상으로 올라가 보세요." }
         ];
-        let currentId = 0;
+
+        // Load currentId from the URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentId = parseInt(urlParams.get('id'), 10) || 0;  // 기본값이 0이 되도록 설정
 
         function loadArtwork() {
-            if (currentId < artworks.length) {
+            if (currentId >= 0 && currentId < artworks.length) {
                 const artwork = artworks[currentId];
-                document.getElementById('instructions').textContent = artwork.instructions;
+                // 줄바꿈이 HTML에 반영되도록 instructions에 innerHTML을 사용
+                document.getElementById('instructions').innerHTML = artwork.instructions;
                 document.getElementById('artworkImage').src = artwork.image;
                 document.getElementById('nextButton').textContent = `"${artwork.title}" 도착`;
             } else {
-                // Redirect to tourend.html if the last artwork is reached
-                window.location.href = 'tourend.html';
+                // Redirect to /tourend (Flask 라우트 사용)
+                window.location.href = '/tourend';
             }
         }
 
         function goToTouring() {
-            window.location.href = `touring.html?id=${currentId}`;
+            // Increment the currentId and redirect to the touring page with the new id
+            currentId++;
+            window.location.href = `/touring?id=${currentId}`;
         }
 
         window.onload = loadArtwork;

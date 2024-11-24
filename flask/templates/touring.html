@@ -126,7 +126,7 @@
                 document.getElementById('artworkImage').src = artwork.image;
                 document.getElementById('description').textContent = artwork.description;
             } else {
-                window.location.href = 'tourend.html';
+                window.location.href = '/tourend.html';
             }
         }
 
@@ -147,9 +147,11 @@
         function goToNextArtwork() {
             currentId++;
             if (currentId < artworks.length) {
-                window.location.href = `tourstart.html?id=${currentId}`;
+                console.log(`/tourstart?id=${currentId}`);  // 경로 확인을 위한 로그
+                window.location.href = `/tourstart?id=${currentId}`;
             } else {
-                window.location.href = 'tourend.html';
+                console.log('/tourend');  // 경로 확인을 위한 로그
+                window.location.href = '/tourend';
             }
         }
 
