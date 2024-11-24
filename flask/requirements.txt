@@ -1,0 +1,2 @@
+Flaks==3.1.0
+ultralytics==8.31.31
