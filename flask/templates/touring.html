@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touring</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .content {
+            width: 100%;
+            max-width: 600px;
+        }
+        .artwork {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+        .response-container {
+            background-color: #333;
+            padding: 1em;
+            border-radius: 10px;
+            margin-bottom: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        .ai-response {
+            font-size: 1em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        .next-button {
+            background-color: #8B3E3E;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75em;
+            width: 100%;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .next-button:hover {
+            background-color: #A84D4D;
+        }
+        .question-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .question-input {
+            flex-grow: 1;
+            padding: 0.5em;
+            border-radius: 20px;
+            border: none;
+            font-size: 1em;
+            color: #000;
+        }
+        .icon-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img id="artworkImage" src="https://via.placeholder.com/400x600?text=Artwork+Image" alt="Artwork" class="artwork">
+        
+        <div class="response-container">
+            <div class="ai-response" id="description">
+                Loading description...
+            </div>
+        </div>
+
+        <div class="question-section">
+            <input type="text" class="question-input" id="questionInput" placeholder="Ask a question...">
+            <button class="icon-button" onclick="simulateVoiceInput()">🎤</button>
+            <button class="icon-button" onclick="sendQuestion()">➔</button>
+        </div>
+
+        <button class="next-button" onclick="goToNextArtwork()">다음 작품으로 넘어가기</button>
+    </div>
+
+    <script>
+        // Sample artwork data
+        const artworks = [
+            { id: 1, title: "Mona Lisa", image: "https://cdn.pixabay.com/photo/2015/04/10/01/41/monalisa-71501_1280.jpg", description: "Quantum computing is a type of computing where information is processed using quantum-mechanical phenomena, such as superposition and entanglement." },
+            { id: 2, title: "The Birth of Venus", image: "https://cdn.pixabay.com/photo/2016/09/11/18/04/venus-1664199_1280.jpg", description: "The Birth of Venus is a masterpiece by Botticelli, illustrating the Roman goddess Venus emerging from the sea." },
+            { id: 3, title: "Starry Night", image: "https://cdn.pixabay.com/photo/2015/12/01/19/48/starry-night-1076125_1280.jpg", description: "Starry Night is a famous painting by Van Gogh, depicting a swirling night sky over a quiet town." }
+        ];
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentId = parseInt(urlParams.get('id')) || 0;
+
+        function loadArtwork() {
+            if (currentId < artworks.length) {
+                const artwork = artworks[currentId];
+                document.getElementById('artworkImage').src = artwork.image;
+                document.getElementById('description').textContent = artwork.description;
+            } else {
+                window.location.href = 'tourend.html';
+            }
+        }
+
+        function simulateVoiceInput() {
+            document.getElementById('questionInput').value = "What is the significance of this artwork?";
+            sendQuestion();
+        }
+
+        function sendQuestion() {
+            const question = document.getElementById('questionInput').value;
+            if (question) {
+                const responseBox = document.getElementById('description');
+                responseBox.textContent = `AI도슨트: This artwork's significance is that it symbolizes ${question.toLowerCase()}.`;
+                document.getElementById('questionInput').value = ""; // Clear input
+            }
+        }
+
+        function goToNextArtwork() {
+            currentId++;
+            if (currentId < artworks.length) {
+                window.location.href = `tourstart.html?id=${currentId}`;
+            } else {
+                window.location.href = 'tourend.html';
+            }
+        }
+
+        window.onload = loadArtwork;
+    </script>
+</body>
+</html>
