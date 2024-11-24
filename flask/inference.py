@@ -8,6 +8,7 @@ def prediction(model_path, image_path):
 
     return result
 
+# 필요 없을수도....?
 def chat_gpt(api_key, content):
     openai.api_key = api_key
 
