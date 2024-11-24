@@ -63,6 +63,11 @@
             align-items: center;
         }
 
+        /* Hidden file input */
+        #cameraInput {
+            display: none;
+        }
+
         /* Instruction text */
         .instruction {
             color: #aaa;
@@ -79,8 +84,11 @@
     <div class="input-container">
         <input type="text" placeholder="Enter the Message" id="messageInput">
         
+        <!-- Hidden file input for camera -->
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
+        
         <!-- Camera button -->
-        <button class="icon-button" onclick="uploadImage()">
+        <button class="icon-button" onclick="triggerCamera()">
             📷
         </button>
         
@@ -101,13 +109,21 @@
     </div>
 
     <script>
-        function uploadImage() {
-            // Simulating image upload functionality
-            alert("Camera button clicked. Implement image upload here.");
+        function triggerCamera() {
+            document.getElementById("cameraInput").click();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                alert(`Image selected: ${file.name}`);
+                // Implement further logic, e.g., uploading the image to the server.
+            } else {
+                alert("No image selected.");
+            }
         }
 
         function recordAudio() {
-            // Simulating audio recording functionality
             alert("Microphone button clicked. Implement audio recording here.");
         }
 
