@@ -11,7 +11,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background-color: #1a1a1a;
             color: #fff;
@@ -22,7 +21,6 @@
             align-items: center;
             height: 100vh;
         }
-
         /* Container for the input and icons */
         .input-container {
             position: fixed;
@@ -35,7 +33,6 @@
             border-radius: 25px;
             padding: 0.5em 1em;
         }
-
         /* Input field styling */
         .input-container input[type="text"] {
             flex-grow: 1;
@@ -46,11 +43,9 @@
             outline: none;
             font-size: 1em;
         }
-
         .input-container input[type="text"]::placeholder {
             color: #aaa;
         }
-
         /* Icon button styling */
         .icon-button {
             background: none;
@@ -62,12 +57,6 @@
             display: flex;
             align-items: center;
         }
-
-        /* Hidden file input */
-        #cameraInput {
-            display: none;
-        }
-
         /* Instruction text */
         .instruction {
             color: #aaa;
@@ -77,61 +66,77 @@
             text-align: center;
             width: 100%;
         }
+        video {
+            width: 300px;
+            height: 200px;
+            background-color: #000;
+            border: 2px solid #fff;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Video preview -->
+    <video id="videoPreview" autoplay></video> <!-- 카메라 미리보기 화면 -->
+
     <!-- Input container with icons -->
     <div class="input-container">
         <input type="text" placeholder="Enter the Message" id="messageInput">
-        
-        <!-- Hidden file input for camera -->
-        <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
-        
         <!-- Camera button -->
-        <button class="icon-button" onclick="triggerCamera()">
-            📷
-        </button>
-        
+        <button class="icon-button" onclick="startCamera()">📷</button>
         <!-- Microphone button -->
-        <button class="icon-button" onclick="recordAudio()">
-            🎤
-        </button>
-        
+        <button class="icon-button" onclick="startRecording()">🎤</button>
         <!-- Upload button -->
-        <button class="icon-button" onclick="uploadMessage()">
-            ➔
-        </button>
+        <button class="icon-button" onclick="uploadMessage()">➔</button>
     </div>
-
     <!-- Instruction text -->
-    <div class="instruction">
-        카메라 버튼을 눌러 작품을 업로드 해주세요.
-    </div>
+    <div class="instruction">카메라 버튼을 눌러 작품을 업로드 해주세요.</div>
 
     <script>
-        function triggerCamera() {
-            document.getElementById("cameraInput").click();
-        }
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                alert(`Image selected: ${file.name}`);
-                // Implement further logic, e.g., uploading the image to the server.
-            } else {
-                alert("No image selected.");
+        // 카메라 활성화 및 스트림 연결
+        async function startCamera() {
+            const video = document.getElementById("videoPreview");
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true }); // 카메라 스트림 요청
+                video.srcObject = stream; // 비디오 스트림 연결
+            } catch (error) {
+                alert("카메라 접근이 거부되었습니다: " + error.message);
             }
         }
 
-        function recordAudio() {
-            alert("Microphone button clicked. Implement audio recording here.");
+        // 오디오 녹음 기능 구현
+        let mediaRecorder;
+        let audioChunks = [];
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); // 오디오 스트림 요청
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play(); // 녹음된 오디오 재생
+                    alert("녹음 완료. 녹음된 오디오가 재생됩니다.");
+                };
+
+                mediaRecorder.start();
+                alert("녹음이 시작되었습니다. 녹음을 중지하려면 다시 버튼을 클릭하세요.");
+            } catch (error) {
+                alert("마이크 접근이 거부되었습니다: " + error.message);
+            }
         }
 
+        // 메시지 업로드 기능 구현
         function uploadMessage() {
             const message = document.getElementById("messageInput").value;
             if (message) {
                 alert(`Message sent: ${message}`);
-                document.getElementById("messageInput").value = ""; // Clear the input field
+                document.getElementById("messageInput").value = ""; // 입력 필드 초기화
             } else {
                 alert("Please enter a message before sending.");
             }
