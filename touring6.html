@@ -145,8 +145,8 @@
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: "text-davinci-003",
-                        prompt: question,
+                        model: "gpt-4",
+                        prompt: `You are an AI docent at the Louvre Museum. You are receiving questions about ${artwork.title}. Answer the questions like a docent in korean. question is ${questions}`,
                         max_tokens: 150,
                         temperature: 0.7
                     })
@@ -154,7 +154,7 @@
 
                 const data = await response.json();
                 const answer = data.choices[0].text.trim();
-                document.getElementById('description').innerHTML += `<br><br>AI 응답: ${answer}`; // 응답을 기존 설명에 추가
+                document.getElementById('description').innerHTML += `<br><br>AI 응답: ${answer}`; // 응답 추가
             } catch (error) {
                 console.error('Error:', error);
                 alert("응답을 가져오는 중 문제가 발생했습니다.");
