@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touring</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .content {
+            width: 100%;
+            max-width: 600px;
+        }
+        .artwork {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+        .response-container {
+            background-color: #333;
+            padding: 1em;
+            border-radius: 10px;
+            margin-bottom: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        .ai-response {
+            font-size: 1em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        .next-button {
+            background-color: #8B3E3E;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75em;
+            width: 100%;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .next-button:hover {
+            background-color: #A84D4D;
+        }
+        .question-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .question-input {
+            flex-grow: 1;
+            padding: 0.5em;
+            border-radius: 20px;
+            border: none;
+            font-size: 1em;
+            color: #000;
+        }
+        .icon-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img id="artworkImage" alt="Artwork" class="artwork">
+
+        <div class="response-container">
+            <div class="ai-response" id="description">
+                Loading description...
+            </div>
+        </div>
+
+        <div class="question-section">
+            <input type="text" class="question-input" id="questionInput" placeholder="Ask a question...">
+            <button class="icon-button" onclick="sendQuestion()">➞</button>
+        </div>
+
+        <button class="next-button" onclick="goToNextArtwork()">다음 작품으로 넘어가기</button>
+    </div>
+
+    <script>
+        // Sample artwork data
+        const artworks = [
+            {
+                id: 1,
+                title: "Aphrodite / known as the Venus de Milo",
+                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img3.png?raw=true",
+                description: "이곳에서 만나보실 작품은 '밀로의 비너스'입니다. 그녀의 온화한 시선과 독특한 자세는 당시의 조각된 여신들과 확연히 구별되는 아름다움을 보여줍니다.<br> 이 특별한 비너스는 그리스의 멜로스 섬(오늘날 밀로스로 알려진 곳)에서 발견되었으며, 루이 18세에게 선물된 후 1821년 루브르 박물관에 자리 잡게 되었습니다.<br><br> 이 조각상은 나폴레옹 시대 이후 예술품 반환의 풍파 속에서도, 루브르 박물관의 걸작으로 찬사를 받으며 영구히 남게 되었는데요.<br> 당시 나폴레옹의 워털루 패배로 인해 빈 조약에 따라 약 5,000점의 예술 작품이 원 소유자에게 반환되었고, 루브르는 많은 고대 유물을 잃게 되었습니다.<br> 하지만 이 비너스는 환영받는 존재로, 박물관의 명성을 다시 한 번 높이는 계기가 되었죠.<br><br> 그녀의 매력은 세월이 흘러도 여전히 강렬합니다.<br> 오늘날에도 예술과 대중문화에서 꾸준히 모방되고 언급되는 '밀로의 비너스'의 위대한 존재감을 직접 느껴보시기 바랍니다."
+            }
+        ];
+
+        const artwork = artworks[0];
+        let conversationContext = [
+            {
+                role: "system",
+                content: `You are an AI docent at the Louvre Museum. You are receiving questions about ${artwork.title}. Answer the user's questions like a docent in Korean.`
+            }
+        ];
+
+        function loadArtwork() {
+            document.getElementById('artworkImage').src = artwork.image;
+            document.getElementById('artworkImage').alt = artwork.title;
+            document.getElementById('description').innerHTML = artwork.description;
+        }
+
+        async function sendQuestion() {
+            const question = document.getElementById('questionInput').value;
+            const responseBox = document.getElementById('description');
+
+            if (!question) {
+                alert("질문을 입력하세요.");
+                return;
+            }
+
+            conversationContext.push({ role: "user", content: question });
+
+            const apiUrl = 'https://api.openai.com/v1/chat/completions';
+            const apiKey = 'YOUR_OPENAI_API_KEY'; // Replace with your OpenAI API key
+
+            try {
+                responseBox.innerHTML += `<br><br>사용자: ${question}<br>로딩 중...`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: conversationContext,
+                        max_tokens: 150,
+                        temperature: 0.7
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const answer = data.choices[0].message.content.trim();
+                    conversationContext.push({ role: "assistant", content: answer });
+                    responseBox.innerHTML += `<br><br>AI 응답: ${answer}`;
+                } else {
+                    responseBox.innerHTML += `<br><br>AI 응답을 가져오지 못했습니다.`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert("응답을 가져오는 중 문제가 발생했습니다.");
+            }
+
+            document.getElementById('questionInput').value = "";
+        }
+
+        function goToNextArtwork() {
+            window.location.href = 'tourstart3.html';
+        }
+
+        window.onload = loadArtwork;
+    </script>
+</body>
+</html>
