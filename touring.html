@@ -93,34 +93,37 @@
 <body>
     <div class="content">
         <img id="artworkImage" alt="Artwork" class="artwork">
+        
         <div class="response-container">
             <div class="ai-response" id="description">
                 Loading description...
             </div>
         </div>
+
         <div class="question-section">
             <input type="text" class="question-input" id="questionInput" placeholder="Ask a question...">
             <button class="icon-button" onclick="simulateVoiceInput()">🎤</button>
             <button class="icon-button" onclick="sendQuestion()">➞</button>
         </div>
+
         <button class="next-button" onclick="goToNextArtwork()">다음 작품으로 넘어가기</button>
     </div>
+
     <script>
         // Sample artwork data
         const artworks = [
-            {
-                id: 1,
-                title: "The caryatids / Jean Goujon",
-                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img2-2.png?raw=true",
-                description: "이곳은 루브르 박물관의 'Salle des Cariatides'입니다. 앙리 2세 시대, 루브르는 중세 요새에서 르네상스 양식의 궁전으로 변모하였는데요, 이 화려한 공간이 그 대표적인 예입니다. <br>건축가 피에르 레스코가 설계한 이곳은 원래 무도장으로 사용되었으며, 고전적인 디자인이 돋보이는 장소입니다.<br> 특히, 음악가들의 연주를 들을 수 있었던 갤러리와, 로마에서 영감을 받은 4개의 '카리아티드' 조각상이 눈에 띕니다. 당시의 연회와 무도회가 열리던 이곳의 웅장함을 느껴보세요."
+            { id: 1,
+             title: "The caryatids / Jean Goujon", 
+             image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img2-2.png?raw=true", 
+             description: "이곳은 루브르 박물관의 'Salle des Cariatides'입니다. 앙리 2세 시대, 루브르는 중세 요새에서 르네상스 양식의 궁전으로 변모하였는데요, 이 화려한 공간이 그 대표적인 예입니다. <br>건축가 피에르 레스코가 설계한 이곳은 원래 무도장으로 사용되었으며, 고전적인 디자인이 돋보이는 장소입니다.<br> 특히, 음악가들의 연주를 들을 수 있었던 갤러리와, 로마에서 영감을 받은 4개의 '카리아티드' 조각상이 눈에 띕니다. 당시의 연회와 무도회가 열리던 이곳의 웅장함을 느껴보세요."
             }
         ];
 
         function loadArtwork() {
-            const artwork = artworks[0]; // Load the first artwork
+            const artwork = artworks[0]; // artworks 배열의 첫 번째 작품 데이터 사용
             document.getElementById('artworkImage').src = artwork.image;
-            document.getElementById('artworkImage').alt = artwork.title; // Add alt description
-            document.getElementById('description').innerHTML = artwork.description; // Use innerHTML for HTML formatting
+            document.getElementById('artworkImage').alt = artwork.title; // 이미지 설명 추가
+            document.getElementById('description').innerHTML = artwork.description; // innerHTML 사용으로 HTML 태그 적용
         }
 
         async function sendQuestion() {
@@ -129,9 +132,11 @@
                 alert("질문을 입력하세요.");
                 return;
             }
-            const artwork = artworks[0]; 
-            const apiUrl = 'https://api.openai.com/v1/chat/completions'; 
-            const apiKey = 'YOUR_OPENAI_API_KEY';
+
+            // OpenAI API 엔드포인트
+            const apiUrl = 'https://api.openai.com/v1/completions';
+            const apiKey = 'YOUR_OPENAI_API_KEY'; // 여기에 본인의 OpenAI API 키를 입력하세요.
+
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -140,24 +145,16 @@
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: "gpt-4", 
-                        messages: [
-                            {
-                                role: "system",
-                                content: `You are an AI docent at the Louvre Museum. You are receiving questions about ${artwork.title}. Answer the user's questions like a docent in korean.` 
-                            },
-                            {
-                                role: "user",
-                                content: question
-                            }
-                        ],
+                        model: "gpt-4",
+                        prompt: question,
                         max_tokens: 150,
                         temperature: 0.7
                     })
                 });
+
                 const data = await response.json();
-                const answer = data.choices[0].message.content.trim(); 
-                document.getElementById('description').innerHTML += `<br><br>AI 응답: ${answer}`;
+                const answer = data.choices[0].text.trim();
+                document.getElementById('description').innerHTML += `<br><br>AI 응답: ${answer}`; // 응답 추가
             } catch (error) {
                 console.error('Error:', error);
                 alert("응답을 가져오는 중 문제가 발생했습니다.");
