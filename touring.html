@@ -112,10 +112,10 @@
     <script>
         // Sample artwork data
         const artworks = [
-            { id: 1,
-             title: "The caryatids / Jean Goujon", 
-             image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img2-2.png?raw=true", 
-             description: "이곳은 루브르 박물관의 'Salle des Cariatides'입니다. 앙리 2세 시대, 루브르는 중세 요새에서 르네상스 양식의 궁전으로 변모하였는데요, 이 화려한 공간이 그 대표적인 예입니다. <br>건축가 피에르 레스코가 설계한 이곳은 원래 무도장으로 사용되었으며, 고전적인 디자인이 돋보이는 장소입니다.<br> 특히, 음악가들의 연주를 들을 수 있었던 갤러리와, 로마에서 영감을 받은 4개의 '카리아티드' 조각상이 눈에 띕니다. 당시의 연회와 무도회가 열리던 이곳의 웅장함을 느껴보세요."
+            { id: 1, 
+              title: "Aphrodite / known as the Venus de Milo", 
+              image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img3.png?raw=true", 
+              description: "이곳에서 만나보실 작품은 '밀로의 비너스'입니다. 그녀의 온화한 시선과 독특한 자세는 당시의 조각된 여신들과 확연히 구별되는 아름다움을 보여줍니다.<br> 이 특별한 비너스는 그리스의 멜로스 섬(오늘날 밀로스로 알려진 곳)에서 발견되었으며, 루이 18세에게 선물된 후 1821년 루브르 박물관에 자리 잡게 되었습니다.<br><br> 이 조각상은 나폴레옹 시대 이후 예술품 반환의 풍파 속에서도, 루브르 박물관의 걸작으로 찬사를 받으며 영구히 남게 되었는데요.<br> 당시 나폴레옹의 워털루 패배로 인해 빈 조약에 따라 약 5,000점의 예술 작품이 원 소유자에게 반환되었고, 루브르는 많은 고대 유물을 잃게 되었습니다.<br> 하지만 이 비너스는 환영받는 존재로, 박물관의 명성을 다시 한 번 높이는 계기가 되었죠.<br><br> 그녀의 매력은 세월이 흘러도 여전히 강렬합니다.<br> 오늘날에도 예술과 대중문화에서 꾸준히 모방되고 언급되는 '밀로의 비너스'의 위대한 존재감을 직접 느껴보시기 바랍니다."
             }
         ];
 
@@ -146,7 +146,7 @@
                     },
                     body: JSON.stringify({
                         model: "gpt-4",
-                        prompt: 'You are an AI docent at the Louvre Museum. You are receiving questions about ${artwork.title}. Answer the questions like a docent in korean. question is ${questions}',
+                        prompt: `You are an AI docent at the Louvre Museum. You are receiving questions about ${artwork.title}. Answer the questions like a docent in korean. question is ${questions}`
                         max_tokens: 150,
                         temperature: 0.7
                     })
