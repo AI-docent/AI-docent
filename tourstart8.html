@@ -98,10 +98,11 @@
         const artworks = [
             { 
                 id: 1, 
-                title: "The caryatids / Jean Goujon", 
-                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img2.png?raw=true", 
-                instructions: "설리 윙으로 들어가세요.\n티켓 검사를 마친 후 직진하세요.\nPavillon de l'Horloge 입구에 도착하면 오른쪽 계단을 타고 1층으로   올라가세요.\n계단 꼭대기에 도착하면 오른쪽에 있는 이중 나무 문을 통과하세요.\n당신은 Salle des Cariatides에 있습니다. 뒤를 돌아보면 문 위에 있는 음악가들의 갤러리가 보입니다."
-            }
+                title: "The Raft of the Medusa / Théodore Géricault", 
+                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img9.png?raw=true", 
+                instructions: "모나리자 뒤로 가서 다음 방으로 들어가세요. \n붉은 벽이 있는 긴 갤러리로 좌회전하세요. \n왼쪽 벽을 따라 조금 더 가면 '메두사의 뗏목'이 보입니다."
+            },
+
         ];
         const urlParams = new URLSearchParams(window.location.search);
         let currentId = parseInt(urlParams.get('id')) || 1;
@@ -120,11 +121,9 @@
         
                 const instructionsArray = artwork.instructions.split("\n");
                 const icons = [
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/assistant_navigation_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 첫 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/north_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 두 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/floor_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 세 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/east_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 네 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/assistant_navigation_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"  // 다섯 번째 아이콘 링크
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/b43a21b719e21182e1ce6fcb407784671bb2bcba/dataimg/logout_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg",
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/b43a21b719e21182e1ce6fcb407784671bb2bcba/dataimg/turn_left_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg",
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/b43a21b719e21182e1ce6fcb407784671bb2bcba/dataimg/north_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"
                 ]; 
 
                 instructionsDiv.innerHTML = instructionsArray.map((instruction, index) => `
@@ -138,10 +137,11 @@
                 window.location.href = 'tourend.html';
             }
         }
-
         function goToTouring() {
-            window.location.href = `touring.html?id=${currentId}`;
+            window.location.href = `touring8.html?id=${currentId}`;
         }
+
+
 
         window.onload = loadArtwork;
     </script>

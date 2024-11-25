@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -71,16 +72,6 @@
             font-size: 0.9em; 
             color: #fff;
         }
-        .instruction-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px; /* 항목 사이에 여백 추가 */
-        }
-        .instruction-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 10px; /* 이모티콘과 텍스트 사이에 여백 추가 */
-        }
     </style>
 </head>
 <body>
@@ -98,10 +89,12 @@
         const artworks = [
             { 
                 id: 1, 
-                title: "The caryatids / Jean Goujon", 
-                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img2.png?raw=true", 
-                instructions: "설리 윙으로 들어가세요.\n티켓 검사를 마친 후 직진하세요.\nPavillon de l'Horloge 입구에 도착하면 오른쪽 계단을 타고 1층으로   올라가세요.\n계단 꼭대기에 도착하면 오른쪽에 있는 이중 나무 문을 통과하세요.\n당신은 Salle des Cariatides에 있습니다. 뒤를 돌아보면 문 위에 있는 음악가들의 갤러리가 보입니다."
+                title: "Way to exit", 
+                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img13.png?raw=true", 
+                instructions: "밖으로 나갈 길을 찾으려면 피라미드 맞은편의 방으로 가세요. \n왼쪽의 나선형 계단을 내려가세요. \n오른쪽 계단을 내려가서 피라미드까지 직진하세요."
             }
+
+
         ];
         const urlParams = new URLSearchParams(window.location.search);
         let currentId = parseInt(urlParams.get('id')) || 1;
@@ -120,11 +113,10 @@
         
                 const instructionsArray = artwork.instructions.split("\n");
                 const icons = [
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/assistant_navigation_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 첫 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/north_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 두 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/floor_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 세 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/east_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg", // 네 번째 아이콘 링크
-                    "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/6fe18ad0c1f66ac4b7727da91ee26ab6d995c835/dataimg/assistant_navigation_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"  // 다섯 번째 아이콘 링크
+                "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/90951ca5921a74dddc8b939e2faa3b885053d833/dataimg/turn_left_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg",
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/90951ca5921a74dddc8b939e2faa3b885053d833/dataimg/floor_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg",
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/90951ca5921a74dddc8b939e2faa3b885053d833/dataimg/logout_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"
+                  
                 ]; 
 
                 instructionsDiv.innerHTML = instructionsArray.map((instruction, index) => `
@@ -138,10 +130,10 @@
                 window.location.href = 'tourend.html';
             }
         }
-
         function goToTouring() {
-            window.location.href = `touring.html?id=${currentId}`;
+            window.location.href = `tourend.html?id=${currentId}`;
         }
+
 
         window.onload = loadArtwork;
     </script>
