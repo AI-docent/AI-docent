@@ -102,7 +102,6 @@
 
         <div class="question-section">
             <input type="text" class="question-input" id="questionInput" placeholder="Ask a question...">
-            <button class="icon-button" onclick="simulateVoiceInput()">🎤</button>
             <button class="icon-button" onclick="sendQuestion()">➞</button>
         </div>
 
@@ -119,6 +118,12 @@
                 description: "이곳은 루브르 박물관의 'Salle des Cariatides'입니다. 앙리 2세 시대, 루브르는 중세 요새에서 르네상스 양식의 궁전으로 변모하였는데요, 이 화려한 공간이 그 대표적인 예입니다. <br>건축가 피에르 레스코가 설계한 이곳은 원래 무도장으로 사용되었으며, 고전적인 디자인이 돋보이는 장소입니다.<br> 특히, 음악가들의 연주를 들을 수 있었던 갤러리와, 로마에서 영감을 받은 4개의 '카리아티드' 조각상이 눈에 띕니다. 당시의 연회와 무도회가 열리던 이곳의 웅장함을 느껴보세요."
             }
         ];
+        let conversationContext = [
+            { 
+                role: "system", 
+                content: `You are an AI docent at the Louvre Museum. You are receiving questions about ${title}. Answer the user's questions like a docent in korean.` 
+            }
+        ];
 
         function loadArtwork() {
             const artwork = artworks[0]; // artworks 배열의 첫 번째 작품 데이터 사용
@@ -129,16 +134,24 @@
 
         async function sendQuestion() {
             const question = document.getElementById('questionInput').value;
+            const responseBox = document.getElementById('description');
+
             if (!question) {
                 alert("질문을 입력하세요.");
                 return;
             }
 
-            // OpenAI API 엔드포인트 및 키
+            // Add user's question to the context
+            conversationContext.push({ role: "user", content: question });
+
+            // OpenAI API details
             const apiUrl = 'https://api.openai.com/v1/chat/completions';
-            const apiKey = ''; 
+            const apiKey = 'YOUR_OPENAI_API_KEY'; // Replace with your OpenAI API key
 
             try {
+                // Show loading message
+                responseBox.innerHTML += `<br><br>사용자: ${question}<br>로딩 중...`;
+
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
@@ -147,7 +160,7 @@
                     },
                     body: JSON.stringify({
                         model: "gpt-3.5-turbo",
-                        messages: [{ role: "user", content: question }],
+                        messages: conversationContext, // Include the context
                         max_tokens: 150,
                         temperature: 0.7
                     })
@@ -156,19 +169,22 @@
                 if (response.ok) {
                     const data = await response.json();
                     const answer = data.choices[0].message.content.trim();
-                    document.getElementById('description').innerHTML += `<br><br>AI 응답: ${answer}`; // 응답 추가
+
+                    // Add the AI's response to the context
+                    conversationContext.push({ role: "assistant", content: answer });
+
+                    // Display the AI's response
+                    responseBox.innerHTML += `<br><br>AI 응답: ${answer}`;
                 } else {
-                    document.getElementById('description').innerHTML += `<br><br>AI 응답을 가져오지 못했습니다.`;
+                    responseBox.innerHTML += `<br><br>AI 응답을 가져오지 못했습니다.`;
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert("응답을 가져오는 중 문제가 발생했습니다.");
             }
-        }
 
-        function simulateVoiceInput() {
-            document.getElementById('questionInput').value = "이 작품의 역사적 배경은?";
-            sendQuestion();
+            // Clear the input field
+            document.getElementById('questionInput').value = "";
         }
 
         function goToNextArtwork() {
