@@ -17,15 +17,35 @@
             font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
             height: 100vh;
+            padding: 10px;
         }
-        /* Container for the input and icons */
+        .chat-container {
+            flex-grow: 1;
+            width: 100%;
+            max-width: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #222;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        .message p {
+            color: #ddd;
+            margin: 5px 0 0 0;
+            word-wrap: break-word;
+        }
         .input-container {
-            position: fixed;
-            bottom: 20px;
-            width: 90%;
+            width: 100%;
             max-width: 500px;
             display: flex;
             align-items: center;
@@ -33,7 +53,6 @@
             border-radius: 25px;
             padding: 0.5em 1em;
         }
-        /* Input field styling */
         .input-container input[type="text"] {
             flex-grow: 1;
             background: none;
@@ -46,7 +65,6 @@
         .input-container input[type="text"]::placeholder {
             color: #aaa;
         }
-        /* Icon button styling */
         .icon-button {
             background: none;
             border: none;
@@ -57,89 +75,109 @@
             display: flex;
             align-items: center;
         }
-        /* Instruction text */
-        .instruction {
-            color: #aaa;
-            font-size: 0.9em;
-            position: fixed;
-            bottom: 5px;
-            text-align: center;
-            width: 100%;
-        }
-        video {
-            width: 300px;
-            height: 200px;
-            background-color: #000;
-            border: 2px solid #fff;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
-    <!-- Video preview -->
-    <video id="videoPreview" autoplay></video> <!-- 카메라 미리보기 화면 -->
+    <div class="chat-container" id="chatContainer"></div>
 
-    <!-- Input container with icons -->
     <div class="input-container">
-        <input type="text" placeholder="Enter the Message" id="messageInput">
-        <!-- Camera button -->
-        <button class="icon-button" onclick="startCamera()">📷</button>
-        <!-- Microphone button -->
-        <button class="icon-button" onclick="startRecording()">🎤</button>
-        <!-- Upload button -->
-        <button class="icon-button" onclick="uploadMessage()">➔</button>
+        <input type="text" placeholder="Enter the message" id="messageInput">
+        <button class="icon-button" onclick="takePicture()">📷</button>
+        <button class="icon-button" onclick="recordAudio()">🎤</button>
+        <button class="icon-button" onclick="sendMessage()">➔</button>
     </div>
-    <!-- Instruction text -->
-    <div class="instruction">카메라 버튼을 눌러 작품을 업로드 해주세요.</div>
 
     <script>
-        // 카메라 활성화 및 스트림 연결
-        async function startCamera() {
-            const video = document.getElementById("videoPreview");
+        const chatContainer = document.getElementById("chatContainer");
+
+        // Function to simulate taking a picture
+        async function takePicture() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true }); // 카메라 스트림 요청
-                video.srcObject = stream; // 비디오 스트림 연결
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement("video");
+                video.srcObject = stream;
+                video.play();
+
+                // Create a canvas to capture the image
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+
+                setTimeout(() => {
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageUrl = canvas.toDataURL("image/png");
+
+                    // Stop the video stream
+                    stream.getTracks().forEach((track) => track.stop());
+
+                    // Add the picture to the chat
+                    addMessage("user", `<img src="${imageUrl}" alt="Captured image">`);
+                }, 1000); // Wait 1 second for the video to load
             } catch (error) {
-                alert("카메라 접근이 거부되었습니다: " + error.message);
+                alert("Camera access denied.");
             }
         }
 
-        // 오디오 녹음 기능 구현
-        let mediaRecorder;
-        let audioChunks = [];
-        async function startRecording() {
+        // Function to record audio and convert to text
+        async function recordAudio() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); // 오디오 스트림 요청
-                mediaRecorder = new MediaRecorder(stream);
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                const audioChunks = [];
 
                 mediaRecorder.ondataavailable = (event) => {
                     audioChunks.push(event.data);
                 };
 
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrl);
-                    audio.play(); // 녹음된 오디오 재생
-                    alert("녹음 완료. 녹음된 오디오가 재생됩니다.");
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+
+                    // Use Whisper API or local processing for transcription
+                    const formData = new FormData();
+                    formData.append("file", audioBlob);
+                    formData.append("model", "whisper-1");
+
+                    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer YOUR_OPENAI_API_KEY`
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    addMessage("user", result.text || "Audio transcription failed.");
                 };
 
                 mediaRecorder.start();
-                alert("녹음이 시작되었습니다. 녹음을 중지하려면 다시 버튼을 클릭하세요.");
+                alert("Recording... Press OK to stop.");
+                setTimeout(() => mediaRecorder.stop(), 5000); // Stop after 5 seconds
             } catch (error) {
-                alert("마이크 접근이 거부되었습니다: " + error.message);
+                alert("Microphone access denied.");
             }
         }
 
-        // 메시지 업로드 기능 구현
-        function uploadMessage() {
-            const message = document.getElementById("messageInput").value;
+        // Function to send a text message
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
+
             if (message) {
-                alert(`Message sent: ${message}`);
-                document.getElementById("messageInput").value = ""; // 입력 필드 초기화
+                addMessage("user", message);
+                messageInput.value = "";
             } else {
-                alert("Please enter a message before sending.");
+                alert("Please enter a message.");
             }
+        }
+
+        // Function to add a message to the chat
+        function addMessage(sender, content) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+            messageElement.innerHTML = sender === "user" ? `<p>${content}</p>` : `<p>AI: ${content}</p>`;
+            chatContainer.appendChild(messageElement);
+
+            // Scroll to the bottom of the chat
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
 </body>
