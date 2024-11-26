@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -259,6 +260,154 @@
 
             // Scroll to the bottom of the chat
             chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Mode</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100vh;
+            padding: 10px;
+        }
+        .chat-container {
+            flex-grow: 1;
+            width: 100%;
+            max-width: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #222;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        .message p {
+            color: #ddd;
+            margin: 5px 0 0 0;
+            word-wrap: break-word;
+        }
+        .input-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            border-radius: 25px;
+            padding: 0.5em 1em;
+        }
+        .input-container input[type="text"] {
+            flex-grow: 1;
+            background: none;
+            border: none;
+            color: #fff;
+            padding: 0.5em;
+            outline: none;
+            font-size: 1em;
+        }
+        .input-container input[type="text"]::placeholder {
+            color: #aaa;
+        }
+        .icon-button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5em;
+            margin: 0 0.3em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        #videoContainer {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        video {
+            width: 300px;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container" id="chatContainer"></div>
+    <div id="videoContainer">
+        <video id="videoPreview" autoplay></video>
+        <button class="icon-button" onclick="capturePhoto()">📸 Capture</button>
+    </div>
+    <div class="input-container">
+        <input type="text" placeholder="Enter the message" id="messageInput">
+        <button class="icon-button" onclick="startCamera()">📷</button>
+        <button class="icon-button" onclick="recordAudio()">🎤</button>
+        <button class="icon-button" onclick="sendMessage()">➔</button>
+    </div>
+    <script>
+        const videoContainer = document.getElementById("videoContainer");
+        const videoPreview = document.getElementById("videoPreview");
+        let mediaStream;
+
+        // Function to start the rear camera
+        async function startCamera() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" }
+                });
+                videoPreview.srcObject = mediaStream;
+                videoContainer.style.display = "flex";
+            } catch (error) {
+                alert("Camera access denied or unavailable.");
+            }
+        }
+
+        // Function to capture a photo
+        async function capturePhoto() {
+            const canvas = document.createElement("canvas");
+            canvas.width = videoPreview.videoWidth;
+            canvas.height = videoPreview.videoHeight;
+            const context = canvas.getContext("2d");
+            context.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+            const imageUrl = canvas.toDataURL("image/jpeg"); // Convert to JPEG ########
+
+            // Stop the video stream
+            mediaStream.getTracks().forEach((track) => track.stop());
+            videoContainer.style.display = "none";
+
+            // Save the image locally ########
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const file = new File([blob], "./wjstjf/captured_image.jpg", { type: blob.type });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(file);
+            a.download = "captured_image.jpg";
+            a.click();
+            alert("Image saved to 'jeonseol@JEONui-MacBookAir-2 Downloads'"); // Alert for confirmation ########
         }
     </script>
 </body>
