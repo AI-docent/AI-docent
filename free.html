@@ -402,7 +402,7 @@
             // Save the image locally ########
             const response = await fetch(imageUrl);
             const blob = await response.blob();
-            const file = new File([blob], "jeonseol@JEONui-MacBookAir-2 Downloads/captured_image.jpg", { type: blob.type });
+            const file = new File([blob], "github/flask/static/captured_image.jpg", { type: blob.type }); //여기에 이미지 저장할 경로 쓰면됨.
             const a = document.createElement("a");
             a.href = URL.createObjectURL(file);
             a.download = "captured_image.jpg";
