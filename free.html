@@ -402,12 +402,12 @@
             // Save the image locally ########
             const response = await fetch(imageUrl);
             const blob = await response.blob();
-            const file = new File([blob], "./wjstjf/captured_image.jpg", { type: blob.type });
+            const file = new File([blob], "jeonseol@JEONui-MacBookAir-2 Downloads/captured_image.jpg", { type: blob.type });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(file);
             a.download = "captured_image.jpg";
             a.click();
-            alert("Image saved to 'jeonseol@JEONui-MacBookAir-2 Downloads'"); // Alert for confirmation ########
+            alert("Image saved to '0001Downloads'"); // Alert for confirmation ########
         }
     </script>
 </body>
