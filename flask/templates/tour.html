@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Mode</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Container styling */
+        .message-container {
+            background-color: #333;
+            padding: 1.5em;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            color: #fff;
+        }
+
+        .message-container h3 {
+            font-size: 1.2em;
+            margin-bottom: 1em;
+            color: #aaa;
+        }
+
+        .message-content {
+            font-size: 1em;
+            line-height: 1.6em;
+            margin-bottom: 2em;
+        }
+
+        /* Button styling */
+        .start-tour-button {
+            display: block;
+            width: 100%;
+            background-color: #8B3E3E; /* Dark red color */
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75em 0;
+            font-size: 1em;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .start-tour-button:hover {
+            background-color: #A84D4D; /* Slightly lighter red on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="message-container">
+        <h3>AI도슨트</h3>
+        <div class="message-content">
+            안녕하세요. 루브르 박물관 도슨트 투어의 도슨트인 AI 도슨트 ‘name’입니다.<br><br>
+            지금부터 1시간 30분 코스의 도슨트 투어가 시작됩니다.<br><br>
+            도슨트 투어는 루브르 박물관에서 선정한 유명 작품 n개로 이루어져있습니다. 제가 길을 안내하는 대로 따라와주시고 해당 작품 앞에 도착하셨다면 ‘도착’ 버튼을 눌러주세요. 버튼을 누르면 작품 설명을 시작합니다. 원하시는 만큼 작품을 구경하시고 충분히 관람하셨다면 ‘다음 작품으로’라고 말씀해주세요. 언제든지 설명이나 루브르 박물관에 대해 추가로 궁금한 점이 있으시면 편하게 물어봐주세요.<br><br>
+            그럼 이제 투어를 시작해볼까요? 루브르 박물관 내부로 들어오셨다면 ‘투어 시작하기’ 버튼을 눌러주세요.
+        </div>
+        <button class="start-tour-button" onclick="startTour()">투어 시작하기</button>
+    </div>
+
+    <script>
+        function startTour() {
+            window.location.href = 'tourstart.html';
+        }
+    </script>
+</body>
+</html>
