@@ -6,7 +6,11 @@ def prediction(model_path, image_path):
     model = YOLO(model_path)
     result = model(image_path)
 
-    return result
+    class_values = result[0].boxes.cls
+
+    class_names = [model.names[int(cls)] for cls in class_values]
+
+    return class_names[0]
 
 # 필요 없을수도....?
 def chat_gpt(api_key, content):
@@ -22,3 +26,6 @@ def chat_gpt(api_key, content):
     )
     return chat
 
+if __name__ == "__main__":
+    result = prediction("checkpoint/best.pt", "static/test.JPG")
+    print("Detected Classes:", result)
