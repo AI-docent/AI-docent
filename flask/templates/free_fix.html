@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Docent</title>
+    <style>
+        /* Reset and Basic Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 90vh;
+            background: #1a1a1a;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-message {
+            background-color: #333;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            line-height: 1.4;
+            max-width: 70%;
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            background-color: #8B3E3E;
+        }
+
+        .chat-message.bot {
+            align-self: flex-start;
+            background-color: #555;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+        }
+
+        .korean-button {
+            background-color: #8B3E3E;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .korean-button:hover {
+            background-color: #8B3E3E;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            background-color: #1e1e1e;
+            border-radius: 25px;
+            padding: 10px 15px;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .input-container input[type="text"] {
+            flex: 1;
+            border: none;
+            background: none;
+            color: #fff;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .icon-button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-content" id="chatContent">
+            <!-- Placeholder content when no image or text is uploaded -->
+            <div class="placeholder" id="placeholder">카메라 버튼을 눌러 작품을 업로드 해주세요.</div>
+        </div>
+        <div class="input-container">
+            <input type="text" placeholder="Enter the Message" id="messageInput" onkeydown="handleKeyDown(event)">
+            <button class="icon-button" onclick="triggerUpload()" id="cameraButton">📷</button>
+            <button class="icon-button" onclick="toggleRecording()" id="micButton">🎤</button>
+            <button class="icon-button" onclick="sendMessage()">➔</button>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" style="display: none;" accept="image/*">
+
+    <script>
+        const chatContent = document.getElementById('chatContent');
+        const messageInput = document.getElementById('messageInput');
+        const fileInput = document.getElementById('fileInput');
+        const apiKey = "YOUR_API_KEY"; // OpenAI API 키
+        const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+
+        // 메시지 전송 함수
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) {
+                alert("메시지를 입력해주세요.");
+                return;
+            }
+
+            // 사용자 메시지를 채팅창에 추가
+            addMessageToChat(message, 'user');
+            messageInput.value = ""; // 입력창 초기화
+
+            // GPT API 호출
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-4",
+                    prompt: `You are an AI docent at the Louvre Museum. Answer the question like a docent in Korean: ${message}`,
+                    max_tokens: 150,
+                    temperature: 0.7
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const botReply = data.choices[0].text.trim();
+                addMessageToChat(botReply, 'bot');
+            } else {
+                addMessageToChat("GPT API 호출 중 오류가 발생했습니다.", 'bot');
+            }
+
+            // "다른 작품 질문하기" 버튼 이동
+            moveAskButton();
+        }
+
+        // "다른 작품 질문하기" 버튼 동적으로 이동
+        function moveAskButton() {
+            const askButton = document.getElementById('askButton');
+            if (!askButton) {
+                const newButton = document.createElement('button');
+                newButton.textContent = "다른 작품 질문하기";
+                newButton.classList.add('korean-button');
+                newButton.id = 'askButton';
+                newButton.onclick = () => window.location.href = '/free';
+                chatContent.appendChild(newButton);
+            } else {
+                chatContent.appendChild(askButton);
+            }
+            chatContent.scrollTop = chatContent.scrollHeight; // 버튼이 추가된 후 스크롤
+        }
+
+        // 엔터 키 입력 처리 함수
+        function handleKeyDown(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        // 채팅창에 메시지 추가
+        function addMessageToChat(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', sender);
+            messageDiv.textContent = message;
+            chatContent.appendChild(messageDiv);
+            chatContent.scrollTop = chatContent.scrollHeight; // 채팅창 맨 아래로 스크롤
+        }
+
+        // 이미지 업로드 함수
+        function triggerUpload() {
+            fileInput.click();
+        }
+
+        fileInput.addEventListener('change', function () {
+            if (!fileInput.files.length) {
+                alert('이미지를 선택해주세요.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = "Uploaded Image";
+                img.style.maxWidth = "100%";
+                img.style.borderRadius = "10px";
+
+                // 채팅창에 이미지 추가
+                chatContent.appendChild(img);
+                chatContent.scrollTop = chatContent.scrollHeight;
+
+                // "다른 작품 질문하기" 버튼 이동
+                moveAskButton();
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
