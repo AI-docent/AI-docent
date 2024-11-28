@@ -7,10 +7,13 @@ from inference import prediction
 
 app = Flask(__name__)
 
-yolo = "checkpoint/best.pt"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+yolo = os.path.join(BASE_DIR, "checkpoint", "best.pt")
 GPT_API_KEY = "Add API KEY"
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), "static")
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "static")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 IMAGE_FILE = os.path.join(UPLOAD_FOLDER, "upload_img.jpg")
 AUDIO_FILE = os.path.join(UPLOAD_FOLDER, "upload_audio.mp3")
