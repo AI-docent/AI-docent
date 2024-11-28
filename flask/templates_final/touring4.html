@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touring</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .content {
+            width: 100%;
+            max-width: 600px;
+        }
+        .artwork {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+        .response-container {
+            background-color: #333;
+            padding: 1em;
+            border-radius: 10px;
+            margin-bottom: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        .ai-response {
+            font-size: 1em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        .next-button {
+            background-color: #8B3E3E;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75em;
+            width: 100%;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .next-button:hover {
+            background-color: #A84D4D;
+        }
+        .question-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .question-input {
+            flex-grow: 1;
+            padding: 0.5em;
+            border-radius: 20px;
+            border: none;
+            font-size: 1em;
+            color: #000;
+        }
+        .icon-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img id="artworkImage" alt="Artwork" class="artwork">
+        
+        <div class="response-container">
+            <div class="ai-response" id="description">
+                Loading description...
+            </div>
+        </div>
+
+        <div class="question-section">
+            <input type="text" class="question-input" id="questionInput" placeholder="Ask a question...">
+            <button class="icon-button" onclick="simulateVoiceInput()">🎤</button>
+            <button class="icon-button" onclick="sendQuestion()">➞</button>
+        </div>
+
+        <button class="next-button" onclick="goToNextArtwork()">다음 작품으로 넘어가기</button>
+    </div>
+
+    <script>
+        // Sample artwork data
+        const artworks = [
+            { id: 1, 
+              title: "Venus and the Three Graces Presenting Gifts to a Young Woman / Sandro Botticelli",
+              image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img5.png?raw=true",
+              description: "화가 산드로 보티첼리가 그린 이 웅장한 르네상스 프레스코화는 1873년, 이탈리아 피렌체 근처의 한 빌라를 리노베이션하는 과정에서 하얗게 칠해진 벽 아래에 숨겨져 있던 모습으로 발견되었습니다.<br>그 후, 1882년에 루브르 박물관에 전시되며 많은 이들에게 공개되었는데요.<br>이 작품은 르네상스 시대 부유한 가문이 보티첼리에게 의뢰한 것으로 추정됩니다.<br>그는 그 가문의 딸을 모델로 삼아 고전적인 여주인공과 큐피드와 함께 이 장면을 배치했으며, 이는 아마 약혼을 기념하기 위한 의도로 보입니다.<br>장면 자체는 우화적인 성격을 띠고 있으며, 보티첼리는 선물 그 자체보다는 선물을 주는 행위에 더 초점을 맞추고 있습니다.<br>두 번째, 비슷한 우화적인 프레스코화는 프루덴스가 자유 예술에 둘러싸인 한 청년을 문법가에게 소개하는 모습을 담고 있습니다.<br>여기에서 청년의 모델이 약혼자였다고 생각하면 더욱 흥미롭겠죠."            
+            }
+        ];
+
+        function loadArtwork() {
+            const artwork = artworks[0]; // artworks 배열의 첫 번째 작품 데이터 사용
+            document.getElementById('artworkImage').src = artwork.image;
+            document.getElementById('artworkImage').alt = artwork.title; // 이미지 설명 추가
+            document.getElementById('description').innerHTML = artwork.description; // innerHTML 사용으로 HTML 태그 적용
+        }
+
+        async function sendQuestion() {
+            const question = document.getElementById('questionInput').value;
+            if (!question) {
+                alert("질문을 입력하세요.");
+                return;
+            }
+
+            // OpenAI API 엔드포인트
+            const apiUrl = 'https://api.openai.com/v1/completions';
+            const apiKey = 'YOUR_OPENAI_API_KEY'; // 여기에 본인의 OpenAI API 키를 입력하세요.
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4",
+                        prompt: `You are an AI docent at the Louvre Museum. You are receiving questions about ${artwork.title}. Answer the questions like a docent in korean. question is ${questions}`,
+                        max_tokens: 150,
+                        temperature: 0.7
+                    })
+                });
+
+                const data = await response.json();
+                const answer = data.choices[0].text.trim();
+                document.getElementById('description').innerHTML += `<br><br>AI 응답: ${answer}`; // 응답 추가
+            } catch (error) {
+                console.error('Error:', error);
+                alert("응답을 가져오는 중 문제가 발생했습니다.");
+            }
+        }
+
+        function goToNextArtwork() {
+            window.location.href = '/tourstart5';
+        }
+
+        window.onload = loadArtwork;
+    </script>
+</body>
+</html>

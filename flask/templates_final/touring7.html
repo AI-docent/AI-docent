@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touring</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .content {
+            width: 100%;
+            max-width: 600px;
+        }
+        .artwork {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+        .response-container {
+            background-color: #333;
+            padding: 1em;
+            border-radius: 10px;
+            margin-bottom: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        .ai-response {
+            font-size: 1em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        .next-button {
+            background-color: #8B3E3E;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75em;
+            width: 100%;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .next-button:hover {
+            background-color: #A84D4D;
+        }
+        .question-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .question-input {
+            flex-grow: 1;
+            padding: 0.5em;
+            border-radius: 20px;
+            border: none;
+            font-size: 1em;
+            color: #000;
+        }
+        .icon-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img id="artworkImage" alt="Artwork" class="artwork">
+        
+        <div class="response-container">
+            <div class="ai-response" id="description">
+                Loading description...
+            </div>
+        </div>
+
+        <div class="question-section">
+            <input type="text" class="question-input" id="questionInput" placeholder="Ask a question...">
+            <button class="icon-button" onclick="simulateVoiceInput()">🎤</button>
+            <button class="icon-button" onclick="sendQuestion()">➞</button>
+        </div>
+
+        <button class="next-button" onclick="goToNextArtwork()">다음 작품으로 넘어가기</button>
+    </div>
+
+    <script>
+        // Sample artwork data
+        const artworks = [
+            { id: 1, 
+                title: "Portrait of Lisa Gherardini, Wife of Francesco del Giocondo, known as the Mona Lisa / Leonardo da Vinci",  
+                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img8-2.png?raw=true", 
+                description: "레오나르도 다빈치가 그린 모나리자는 그의 삶에서 특별히 소중했던 작품 중 하나로 여겨집니다. 그는 생애 동안 이 그림과 결코 헤어지지 않았으며, 루브르 박물관에 도착하자마자 '스타'로 떠올랐습니다. 모나리자의 특별한 매력은 기술적 우수성, 그녀의 유명한 미소, 환상적인 배경 풍경, 그리고 인물을 부드럽게 감싸는 '스푸마토' 기법에 있습니다. 이러한 매력은 그녀에게 많은 관심을 불러일으켰으며, 때로는 논란을 낳기도 했습니다. 예를 들어, 1911년 이탈리아의 한 박물관 직원이 그녀를 '고국으로 돌려주겠다'며 그림을 훔친 사건은 큰 언론 소동을 일으켰습니다. 이후 1966년, 모나리자는 루브르 박물관의 가장 큰 방인 **살 데 제타(Salle des États)**로 옮겨졌으며, 현재 온도와 습도가 조절되는 유리 케이스 안에서 보존되고 있습니다.<br><br>모나리자를 감상하기 위해 줄을 서는 동안, 바로 반대편에 걸려 있는 카나의 혼인 잔치도 놓치지 마세요. 파올로 칼리아리, 즉 베로네세의 작품인 이 그림은 무려 70m²에 달하는 루브르 박물관에서 가장 큰 그림입니다. 이 작품은 원래 베네치아의 수도원 식당을 장식하기 위해 의뢰되었는데, 베로네세는 성경의 장면을 현대적인 베네치아 연회의 배경으로 대담하게 재해석했습니다. 이 그림은 큰 성공을 거두었고, 이후에도 많은 의뢰를 받게 되는 계기가 되었습니다. 하지만 1797년 나폴레옹 군대에 의해 압수되어 거대한 캔버스가 말려 파리로 옮겨졌고, 지금은 루브르의 대표적인 걸작으로 자리 잡고 있습니다."
+            }
+        ];
+
+        function loadArtwork() {
+            const artwork = artworks[0]; // artworks 배열의 첫 번째 작품 데이터 사용
+            document.getElementById('artworkImage').src = artwork.image;
+            document.getElementById('artworkImage').alt = artwork.title; // 이미지 설명 추가
+            document.getElementById('description').innerHTML = artwork.description; // innerHTML 사용으로 HTML 태그 적용
+        }
+
+        async function sendQuestion() {
+            const question = document.getElementById('questionInput').value;
+            if (!question) {
+                alert("질문을 입력하세요.");
+                return;
+            }
+
+            // OpenAI API 엔드포인트
+            const apiUrl = 'https://api.openai.com/v1/completions';
+            const apiKey = 'YOUR_OPENAI_API_KEY'; // 여기에 본인의 OpenAI API 키를 입력하세요.
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4",
+                        prompt: `You are an AI docent at the Louvre Museum. You are receiving questions about ${artwork.title}. Answer the questions like a docent in korean. question is ${questions}`,
+                        max_tokens: 150,
+                        temperature: 0.7
+                    })
+                });
+
+                const data = await response.json();
+                const answer = data.choices[0].text.trim();
+                document.getElementById('description').innerHTML += `<br><br>AI 응답: ${answer}`; // 응답 추가
+            } catch (error) {
+                console.error('Error:', error);
+                alert("응답을 가져오는 중 문제가 발생했습니다.");
+            }
+        }
+
+        function goToNextArtwork() {
+            window.location.href = '/tourstart8';
+        }
+
+        window.onload = loadArtwork;
+    </script>
+</body>
+</html>
