@@ -4,7 +4,7 @@ from ultralytics import YOLO
 
 def prediction(model_path, image_path):
     model = YOLO(model_path)
-    result = model(image_path)
+    result = model(image_path, conf=0.5)
 
     class_values = result[0].boxes.cls
 
