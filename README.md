@@ -11,7 +11,7 @@ git clone https://github.com/AI-docent/AI-docent.git
 cd AI-docent
 ```
 
-### 패키지 설치
+패키지 설치
 ```
 pip install -r requirements.txt
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
