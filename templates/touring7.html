@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touring</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .content {
+            width: 100%;
+            max-width: 600px;
+        }
+        .artwork {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+        .response-container {
+            background-color: #333;
+            padding: 1em;
+            border-radius: 10px;
+            margin-bottom: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        .ai-response {
+            font-size: 1em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        .next-button {
+            background-color: #8B3E3E;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75em;
+            width: 100%;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .next-button:hover {
+            background-color: #A84D4D;
+        }
+        .question-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .question-input {
+            flex-grow: 1;
+            padding: 0.5em;
+            border-radius: 20px;
+            border: none;
+            font-size: 1em;
+            color: #000;
+        }
+        .icon-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img id="artworkImage" alt="Artwork" class="artwork">
+        
+        <div class="response-container">
+            <div class="ai-response" id="description">
+                Loading description...
+            </div>
+        </div>
+
+        <div class="question-section">
+            <input type="text" class="question-input" id="questionInput" placeholder="질문을 입력하세요...">
+            <button class="icon-button" id="micButton" onclick="toggleRecording()">🎤</button>
+            <button class="icon-button" onclick="sendQuestionToTTS()">➞</button>
+        </div>
+
+        <button class="next-button" onclick="goToNextArtwork()">다음 작품으로 넘어가기</button>
+    </div>
+
+    <script>
+        const artworks = [
+            { id: 1, 
+                title: "Mona Lisa", 
+                artist: "Leonardo da Vinci", 
+                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img8-2.png?raw=true", 
+                description: "레오나르도 다빈치가 그린 모나리자는 그의 삶에서 특별히 소중했던 작품 중 하나로 여겨집니다. 그는 생애 동안 이 그림과 결코 헤어지지 않았으며, 루브르 박물관에 도착하자마자 '스타'로 떠올랐습니다. 모나리자의 특별한 매력은 기술적 우수성, 그녀의 유명한 미소, 환상적인 배경 풍경, 그리고 인물을 부드럽게 감싸는 '스푸마토' 기법에 있습니다. 이러한 매력은 그녀에게 많은 관심을 불러일으켰으며, 때로는 논란을 낳기도 했습니다. 예를 들어, 1911년 이탈리아의 한 박물관 직원이 그녀를 '고국으로 돌려주겠다'며 그림을 훔친 사건은 큰 언론 소동을 일으켰습니다. 이후 1966년, 모나리자는 루브르 박물관의 가장 큰 방인 **살 데 제타(Salle des États)**로 옮겨졌으며, 현재 온도와 습도가 조절되는 유리 케이스 안에서 보존되고 있습니다.<br><br>모나리자를 감상하기 위해 줄을 서는 동안, 바로 반대편에 걸려 있는 카나의 혼인 잔치도 놓치지 마세요. 파올로 칼리아리, 즉 베로네세의 작품인 이 그림은 무려 70m²에 달하는 루브르 박물관에서 가장 큰 그림입니다. 이 작품은 원래 베네치아의 수도원 식당을 장식하기 위해 의뢰되었는데, 베로네세는 성경의 장면을 현대적인 베네치아 연회의 배경으로 대담하게 재해석했습니다. 이 그림은 큰 성공을 거두었고, 이후에도 많은 의뢰를 받게 되는 계기가 되었습니다. 하지만 1797년 나폴레옹 군대에 의해 압수되어 거대한 캔버스가 말려 파리로 옮겨졌고, 지금은 루브르의 대표적인 걸작으로 자리 잡고 있습니다."
+            }
+        ];
+
+        function loadArtwork() {
+            const artwork = artworks[0];
+            document.getElementById('artworkImage').src = artwork.image;
+            document.getElementById('artworkImage').alt = artwork.title;
+            document.getElementById('description').innerHTML = artwork.description;
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        function toggleRecording() {
+            const micButton = document.getElementById('micButton');
+
+            if (!isRecording) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    isRecording = true;
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        sendAudioToSTT(audioBlob);
+                        isRecording = false;
+                        updateMicButton(false);
+                    };
+
+                    mediaRecorder.start();
+                    updateMicButton(true);
+                }).catch(error => {
+                    console.error("음성 녹음을 시작할 수 없습니다:", error);
+                    alert("음성 녹음을 시작할 수 없습니다.");
+                });
+            } else {
+                if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                    mediaRecorder.stop();
+                    alert("녹음이 중지되었습니다.");
+                }
+            }
+        }
+
+        function updateMicButton(isRecording) {
+            const micButton = document.getElementById('micButton');
+            if (isRecording) {
+                micButton.innerHTML = "⏹️";
+                micButton.style.backgroundColor = "#A84D4D";
+            } else {
+                micButton.innerHTML = "🎤";
+                micButton.style.backgroundColor = "#555";
+            }
+        }
+
+        async function sendAudioToSTT(audioBlob) {
+            const formData = new FormData();
+            formData.append("audio", audioBlob);
+
+            try {
+                const response = await fetch(`${window.location.origin}/tour-stt`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (data.transcription) {
+                    sendQuestionToTTS(data.transcription);
+                } else {
+                    alert(data.error || "STT 변환에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("STT 요청 중 오류 발생:", error);
+                alert("STT 요청 중 문제가 발생했습니다.");
+            }
+        }
+
+        async function sendQuestionToTTS() {
+            const question = document.getElementById('questionInput').value;
+            if (!question) {
+                alert("질문을 입력하세요.");
+                return;
+            }
+
+            const title = artworks[0].title;
+            const artist = artworks[0].artist;
+
+            try {
+                const response = await fetch(`/tour-gpt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        transcription: question,
+                        title: title,
+                        artist: artist
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.gpt_response) {
+                    document.getElementById('description').innerHTML += `<br><br>AI 응답: ${data.gpt_response}`;
+
+                    if (data.audio_url) {
+                        const audioPlayer = document.createElement('audio');
+                        audioPlayer.controls = true;
+                        audioPlayer.src = data.audio_url;
+                        document.getElementById('description').appendChild(audioPlayer);
+                    }
+                } else {
+                    alert(data.error || "응답을 가져오는 중 문제가 발생했습니다.");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert("질문을 보내는 중 문제가 발생했습니다.");
+            }
+        }
+
+        async function goToNextArtwork() {
+        try {
+            const response = await fetch(`/json-empty`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                if (result === "pass") {
+                    window.location.href = '/tourstart8';
+                } else {
+                    console.error('Response is not "pass":', result);
+                }
+            } else {
+                console.error('Failed to fetch:', response.status);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+        window.onload = loadArtwork;
+    </script>
+</body>
+</html>

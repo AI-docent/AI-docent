@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tour Start</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            min-height: 100vh;
+        }
+        .message-box {
+            background-color: #333;
+            padding: 0.8em;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 1em;
+            text-align: center;
+            color: #fff;
+        }
+        .artwork {
+            display : flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 500px; 
+            margin: 15px 0;
+            height: auto;
+        }
+        .artwork img {
+            width: 90%; 
+            height: auto;
+            display: block;
+        }
+        .next-button {
+            background-color: #8B3E3E;
+            color: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 20px;
+            padding: 0.6em 0;
+            width: 100%;
+            max-width: 500px;
+            font-size: 0.9em; 
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .next-button:hover {
+            background-color: #A84D4D;
+        }
+        .instructions-list {
+            background-color: #333;
+            padding: 0.8em;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 1em;
+            font-size: 0.9em; 
+            color: #fff;
+        }
+        .instruction-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .instruction-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions-list" id="instructions">
+    </div>
+    <div class="artwork">
+        <img id="artworkImage" src="https://via.placeholder.com/300x200?text=Artwork+Image" alt="Artwork">
+    </div>
+    <div class="instruction">해당 작품을 찾으셨다면 아래 버튼을 눌러주세요.</div>
+    <button class="next-button" id="nextButton" onclick="goToTouring()">"작품제목" 도착</button>
+
+    <script>
+        const artworks = [
+            { 
+                id: 1, 
+                title: "The Grande Galerie", 
+                image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img7.png?raw=true", 
+                instructions: "창문 오른쪽에 있는 이중 나무 문을 통해 살롱 카레를 나가세요. \n그랑드 갤러리에서 흰 대리석 기둥이 보이는 곳까지 직진하세요. \n기둥 바로 지나서 왼쪽 벽에 있는 그림을 보세요."
+            }
+
+        ];
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentId = parseInt(urlParams.get('id')) || 1;
+
+        if (isNaN(currentId) || currentId < 1 || currentId > artworks.length) {
+            currentId = 1;
+        }
+
+        function loadArtwork() {
+            if (currentId <= artworks.length) {
+                const artwork = artworks[currentId-1];
+                document.getElementById('artworkImage').src = artwork.image;
+                document.getElementById('nextButton').textContent = `"${artwork.title}" 도착`;
+                
+                const instructionsDiv = document.getElementById('instructions');
+        
+                const instructionsArray = artwork.instructions.split("\n");
+                const icons = [
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/2355d7c83782a1d8147392f03d933a20cf9bf485/dataimg/east_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg",
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/00d5afa432d03cf8b4fed7be9af90728e5b4548e/dataimg/north_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg",
+                  "https://raw.githubusercontent.com/JuHeeS02/ai-docent-test/ada048d3abdff89b5e267e44db8e6eac3cd21b70/dataimg/assistant_navigation_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"              
+                ]; 
+
+                instructionsDiv.innerHTML = instructionsArray.map((instruction, index) => `
+                    <div class="instruction-item">
+                        <img src="${icons[index] || 'https://via.placeholder.com/20'}" alt="icon" class="instruction-icon">
+                        <span>${instruction.trim()}</span>
+                    </div>
+                `).join('');
+            } else {
+                window.location.href = '/tourend';
+            }
+        }
+        function goToTouring() {
+            window.location.href = `/touring6`;
+        }
+
+
+
+        window.onload = loadArtwork;
+    </script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touring</title>
+    <style>
+        /* Basic reset and styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .content {
+            width: 100%;
+            max-width: 600px;
+        }
+        .artwork {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+        .response-container {
+            background-color: #333;
+            padding: 1em;
+            border-radius: 10px;
+            margin-bottom: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        .ai-response {
+            font-size: 1em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        .next-button {
+            background-color: #8B3E3E;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75em;
+            width: 100%;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .next-button:hover {
+            background-color: #A84D4D;
+        }
+        .question-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .question-input {
+            flex-grow: 1;
+            padding: 0.5em;
+            border-radius: 20px;
+            border: none;
+            font-size: 1em;
+            color: #000;
+        }
+        .icon-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img id="artworkImage" alt="Artwork" class="artwork">
+        
+        <div class="response-container">
+            <div class="ai-response" id="description">
+                Loading description...
+            </div>
+        </div>
+
+        <div class="question-section">
+            <input type="text" class="question-input" id="questionInput" placeholder="질문을 입력하세요...">
+            <button class="icon-button" id="micButton" onclick="toggleRecording()">🎤</button>
+            <button class="icon-button" onclick="sendQuestionToTTS()">➞</button>
+        </div>
+
+        <button class="next-button" onclick="goToNextArtwork()">다음 작품으로 넘어가기</button>
+    </div>
+
+    <script>
+        const artworks = [
+            { id: 1, 
+            title: "The Pyramid",
+            artist: "Unknown artist",  
+            image: "https://github.com/JuHeeS02/ai-docent-test/blob/main/dataimg/%EB%A3%A8%EB%B8%8C%EB%A5%B4%EC%BD%94%EC%8A%A41/img12.png?raw=true", 
+            description: "Salle du Manège를 지나는 길에 유리문으로 유명한 피라미드를 들여다보세요.<br>이 피라미드는 1985년부터 1989년까지 건설 당시 언론과 국회에서 큰 논란을 불러일으켰습니다.<br>어떤 사람들은 이 유서 깊은 궁전이 수리할 수 없을 정도로 변형될까 두려워했지만...<br>사실 이 프로젝트는 한때 중세 요새의 심장부에 있었던 30m 높이의 망루를 철거하는 등 800년 된 건축적 변형의 전통을 따랐습니다.<br>IM Pei의 피라미드는 높이가 불과 19m로 튀일리 정원의 기하학에서 영감을 받았으며, 중국 태생의 미국 건축가는 선배들의 건물이 완벽하게 보이도록 가능한 한 가장 투명한 유리를 선택했습니다." 
+            }
+        ];
+
+        function loadArtwork() {
+            const artwork = artworks[0];
+            document.getElementById('artworkImage').src = artwork.image;
+            document.getElementById('artworkImage').alt = artwork.title;
+            document.getElementById('description').innerHTML = artwork.description;
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        function toggleRecording() {
+            const micButton = document.getElementById('micButton');
+
+            if (!isRecording) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    isRecording = true;
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        sendAudioToSTT(audioBlob);
+                        isRecording = false;
+                        updateMicButton(false);
+                    };
+
+                    mediaRecorder.start();
+                    updateMicButton(true);
+                }).catch(error => {
+                    console.error("음성 녹음을 시작할 수 없습니다:", error);
+                    alert("음성 녹음을 시작할 수 없습니다.");
+                });
+            } else {
+                if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                    mediaRecorder.stop();
+                    alert("녹음이 중지되었습니다.");
+                }
+            }
+        }
+
+        function updateMicButton(isRecording) {
+            const micButton = document.getElementById('micButton');
+            if (isRecording) {
+                micButton.innerHTML = "⏹️";
+                micButton.style.backgroundColor = "#A84D4D";
+            } else {
+                micButton.innerHTML = "🎤";
+                micButton.style.backgroundColor = "#555";
+            }
+        }
+
+        async function sendAudioToSTT(audioBlob) {
+            const formData = new FormData();
+            formData.append("audio", audioBlob);
+
+            try {
+                const response = await fetch(`${window.location.origin}/tour-stt`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (data.transcription) {
+                    sendQuestionToTTS(data.transcription);
+                } else {
+                    alert(data.error || "STT 변환에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("STT 요청 중 오류 발생:", error);
+                alert("STT 요청 중 문제가 발생했습니다.");
+            }
+        }
+
+        async function sendQuestionToTTS() {
+            const question = document.getElementById('questionInput').value;
+            if (!question) {
+                alert("질문을 입력하세요.");
+                return;
+            }
+
+            const title = artworks[0].title;
+            const artist = artworks[0].artist;
+
+            try {
+                const response = await fetch(`/tour-gpt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        transcription: question,
+                        title: title,
+                        artist: artist
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.gpt_response) {
+                    document.getElementById('description').innerHTML += `<br><br>AI 응답: ${data.gpt_response}`;
+
+                    if (data.audio_url) {
+                        const audioPlayer = document.createElement('audio');
+                        audioPlayer.controls = true;
+                        audioPlayer.src = data.audio_url;
+                        document.getElementById('description').appendChild(audioPlayer);
+                    }
+                } else {
+                    alert(data.error || "응답을 가져오는 중 문제가 발생했습니다.");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert("질문을 보내는 중 문제가 발생했습니다.");
+            }
+        }
+
+        async function goToNextArtwork() {
+        try {
+            const response = await fetch(`/json-empty`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                if (result === "pass") {
+                    window.location.href = '/tourend';
+                } else {
+                    console.error('Response is not "pass":', result);
+                }
+            } else {
+                console.error('Failed to fetch:', response.status);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+        window.onload = loadArtwork;
+    </script>
+</body>
+</html>

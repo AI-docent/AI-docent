@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Docent</title>
+    <style>
+        /* Reset and Basic Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 10px;
+        }
+    
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 90vh;
+            background: #1a1a1a;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+    
+        .chat-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    
+        .chat-message {
+            background-color: #333;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            line-height: 1.4;
+            max-width: 70%;
+        }
+    
+        .chat-message.user {
+            align-self: flex-end;
+            background-color: #8B3E3E;
+        }
+    
+        .chat-message.bot {
+            align-self: flex-start;
+            background-color: #555;
+        }
+
+        .chat-message img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+        }
+    
+        .korean-button {
+            background-color: #8B3E3E;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        .korean-button:hover {
+            background-color: #8B3E3E;
+        }
+    
+        .input-container {
+            display: flex;
+            align-items: center;
+            background-color: #1e1e1e;
+            border-radius: 25px;
+            padding: 10px 15px;
+            gap: 10px;
+            width: 100%;
+        }
+    
+        .input-container input[type="text"] {
+            flex: 1;
+            border: none;
+            background: none;
+            color: #fff;
+            outline: none;
+            font-size: 1rem;
+        }
+    
+        .icon-button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    
+        .placeholder {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-content" id="chatContent">
+            <div class="placeholder" id="placeholder">사진 촬영 후 자유롭게 질문하세요!</div>
+        </div>
+        <div id="videoContainer" style="display: none;">
+            <video id="videoPreview" autoplay></video>
+        </div>
+        <div class="input-container">
+            <input type="text" placeholder="Enter the Message" id="messageInput" onkeydown="handleKeyDown(event)">
+            <button class="icon-button" id="micButton" onclick="toggleRecording()">🎤</button>
+            <button class="icon-button" id="cameraButton" onclick="toggleCamera()">📸</button>
+            <button class="icon-button" onclick="sendMessage()">➔</button>
+        </div>
+    </div>
+
+    <div id="status" class="instruction"></div>
+    <script>
+        const chatContent = document.getElementById('chatContent');
+        const messageInput = document.getElementById('messageInput');
+        const videoContainer = document.getElementById("videoContainer");
+        const videoPreview = document.getElementById("videoPreview");
+        const micButton = document.getElementById("micButton");
+        const cameraButton = document.getElementById("cameraButton");
+
+        let mediaStream;
+        let isRecording = false;
+        let isCameraOn = false;
+
+        function addLoadingMessage() {
+            const statusMessage = document.createElement('div');
+            statusMessage.classList.add('chat-message', 'bot');
+            statusMessage.textContent = "답변 생성 중...";
+            statusMessage.id = 'statusMessage';
+            chatContent.appendChild(statusMessage);
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        function removeLoadingMessage() {
+            const statusElement = document.getElementById('statusMessage');
+            if (statusElement) {
+                statusElement.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) {
+                alert("메시지를 입력해주세요.");
+                return;
+            }
+
+            addMessageToChat(message, 'user');
+            messageInput.value = "";
+            addLoadingMessage();
+
+            try {
+                const response = await fetch("/gpt-to-tts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ transcription: message }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const botReply = data.gpt_response;
+                    console.log(botReply)
+                    const audioUrl = data.audio_url;
+
+                    removeLoadingMessage();
+                    addMessageToChat(botReply, "bot");
+
+                    if (audioUrl) {
+                        const audioPlayer = document.createElement('audio');
+                        audioPlayer.src = audioUrl;
+                        audioPlayer.controls = true;
+                        audioPlayer.autoplay = true;
+                        chatContent.appendChild(audioPlayer);
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    }
+                } else {
+                    removeLoadingMessage();
+                    alert("GPT 응답을 받는 중 문제가 생겼습니다.");
+                }
+            } catch (error) {
+                removeLoadingMessage();
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+            }
+            moveAskButton();
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        async function moveAskButton() {
+            try {
+                const response = await fetch(`/json-empty`, {
+                    method: 'POST',
+                });
+
+                if (response.ok) {
+                    const result = await response.text();
+                    if (result === "pass") {
+                        const askButton = document.getElementById('askButton');
+                        if (!askButton) {
+                            const newButton = document.createElement('button');
+                            newButton.textContent = "다른 작품 질문하기";
+                            newButton.classList.add('korean-button');
+                            newButton.id = 'askButton';
+                            newButton.onclick = () => window.location.href = '/free';
+                            chatContent.appendChild(newButton);
+                        } else {
+                            chatContent.appendChild(askButton);
+                        }
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    } else {
+                        console.error('Invalid response from /json-empty:', result);
+                    }
+                } else {
+                    console.error('Failed to fetch /json-empty:', response.status);
+                }
+            } catch (error) {
+                console.error('Error during moveAskButton execution:', error);
+            }
+        }
+
+        function addMessageToChat(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', sender);
+            if (sender === 'user' && (message.startsWith('data:image/') || message.startsWith('blob:'))) {
+                const imgElement = document.createElement('img');
+                imgElement.src = message;
+                messageDiv.appendChild(imgElement);
+            } else {
+                messageDiv.textContent = message;
+            }
+            chatContent.appendChild(messageDiv);
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        async function toggleCamera() {
+            if (!isCameraOn) {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: "environment" }
+                    });
+                    videoPreview.srcObject = mediaStream;
+                    videoContainer.style.display = "flex";
+                    cameraButton.textContent = "📷";
+                    isCameraOn = true;
+                } catch (error) {
+                    alert("Camera access denied or unavailable.");
+                }
+            } else {
+                const canvas = document.createElement("canvas");
+                canvas.width = videoPreview.videoWidth;
+                canvas.height = videoPreview.videoHeight;
+
+                if (canvas.width === 0 || canvas.height === 0) {
+                    console.error("캔버스 크기 오류");
+                    return;
+                }
+
+                const context = canvas.getContext("2d");
+                context.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+                const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg"));
+
+                if (!imageBlob) {
+                    console.error("Blob 생성 실패");
+                    return;
+                }
+
+                const imageUrl = URL.createObjectURL(imageBlob);
+
+                addMessageToChat(imageUrl, 'user');
+
+                const formData = new FormData();
+                formData.append("image", imageBlob, "upload_img.jpg");
+
+                addLoadingMessage();
+
+                try {
+                    const response = await fetch("/upload-image", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        const gptMessage = document.createElement("div");
+                        gptMessage.className = "chat-message bot";
+                        gptMessage.textContent = `답변 입력 : ${result.gpt_response}`;
+                        chatContent.appendChild(gptMessage);
+                        chatContent.scrollTop = chatContent.scrollHeight;
+
+                        if (result.audio_url) {
+                            const audioPlayer = document.createElement('audio');
+                            audioPlayer.src = result.audio_url;
+                            audioPlayer.controls = true;
+                            audioPlayer.autoplay = true;
+                            chatContent.appendChild(audioPlayer);
+                            chatContent.scrollTop = chatContent.scrollHeight;
+                        }
+
+                        removeLoadingMessage();
+                        moveAskButton();
+
+                    } else {
+                        removeLoadingMessage();
+                        alert("Failed to upload image. Please try again.");
+                    }
+                } catch (error) {
+                    removeLoadingMessage();
+                    alert("An error occurred while uploading the image.");
+                } finally {
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                    }
+                    videoContainer.style.display = "none";
+                    cameraButton.textContent = "📸";
+                    isCameraOn = false;
+                }
+            }
+        }
+
+        async function toggleRecording() {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
+                        audioChunks = [];
+
+                        const formData = new FormData();
+                        formData.append("audio", audioBlob, "recording.mp3");
+
+                        try {
+                            const response = await fetch("/stt", {
+                                method: "POST",
+                                body: formData,
+                            });
+
+                            if (response.ok) {
+                                const result = await response.json();
+                                const transcription = result.transcription;
+
+                                addMessageToChat(transcription, 'user');
+                                addLoadingMessage();
+
+                                const gptResponse = await fetch("/gpt-to-tts", {
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ transcription: transcription }),
+                                });
+
+                                if (gptResponse.ok) {
+                                    const gptData = await gptResponse.json();
+                                    const botReply = gptData.gpt_response;
+                                    const audioUrl = gptData.audio_url;
+
+                                    removeLoadingMessage();
+                                    addMessageToChat(botReply, 'bot');
+
+                                    if (audioUrl) {
+                                        const audioPlayer = document.createElement('audio');
+                                        audioPlayer.src = audioUrl;
+                                        audioPlayer.controls = true;
+                                        audioPlayer.autoplay = true;
+                                        chatContent.appendChild(audioPlayer);
+                                        chatContent.scrollTop = chatContent.scrollHeight;
+                                    }
+                                    moveAskButton();
+                                } else {
+                                    removeLoadingMessage();
+                                    alert("Failed to get GPT response.");
+                                }
+                            } else {
+                                removeLoadingMessage();
+                                alert("Failed to transcribe audio.");
+                            }
+                        } catch (error) {
+                            console.error("Error during STT/GPT processing:", error);
+                            removeLoadingMessage();
+                            alert("Error during STT or GPT processing.");
+                        }
+
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    micButton.textContent = "⏹️";
+                    isRecording = true;
+                    alert("녹음이 시작되었습니다.");
+                } catch (error) {
+                    alert(`Failed to start recording: ${error.message}`);
+                }
+            } else {
+                if (mediaRecorder && mediaRecorder.state === "recording") {
+                    mediaRecorder.stop();
+                    micButton.textContent = "🎤";
+                    isRecording = false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
