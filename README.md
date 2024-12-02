@@ -11,7 +11,7 @@ pip install numpy
 ```
 
 ## 아키텍쳐
-<img width="869" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957">
+<img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957">
 
 
 ## *YOLO*
