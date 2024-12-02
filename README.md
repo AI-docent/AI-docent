@@ -25,7 +25,7 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 + **Data** : 79 artworks in the Louvre Museum
 + **Total Data** : 47,400 images
 + **Tool** : LabelImg
-+ **Version** : Yolov10 nano
++ **사용 모델** : Yolov10 nano
 
 
 
