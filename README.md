@@ -10,7 +10,11 @@ python 3.14.4, RTX 4060 Laptop 8GB  기준 입니다.
 git clone https://github.com/AI-docent/AI-docent.git
 cd AI-docent
 pip install -r requirements.txt
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+pytorch 설치 방법
+```
+ㅔip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 ```
 
 ## 아키텍쳐
