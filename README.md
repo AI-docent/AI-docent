@@ -1,17 +1,22 @@
 <div align="center">
-<h2>[2024 NLP Term Project]</h2>
-사람의 얼굴 이미지를 가지고 성별과 나이를 예측하는 딥러닝 모델 구축을 위한 프로젝트
+<h2>< 2024 NLP Term Project ></h2>
+개인화된 AI 도슨트
 </div>
+## *가상환경 세팅*
+```
+pip install openapi
+pip install numpy
+```
 
-## *1*
+---  
+## *YOLO*
 
 
-## *2*
+---
+## *GPT API*
 
 
-</p>
-
-
+---
 ## *Reference*
 
 
