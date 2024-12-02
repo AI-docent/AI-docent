@@ -30,7 +30,14 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 
 
 ## *GPT API*
- + **사용 모델** : GPT-4o
++ **사용 모델** : GPT-4o
++ **Evaluation** : Human Evaluation
++ **Prompting** 
+  + system : 도슨트 말투 + 상세 조건
+  + user : 사용자 질문
+  + assistant : 이전 GPT 답변
+
+
 
 ## 주의할 점
 
