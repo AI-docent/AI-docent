@@ -34,10 +34,10 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 
 ## 주의할 점
 
-### 초기 셋팅
+#### 초기 셋팅
 + GPT API KEY는 빠져있습니다. API KEY 부분에 API를 입력해주세요.
 
-### 자유형
+#### 자유형
 1. 자유형 선택시 처음에는 미술작품 이미지를 찍어주세요.
 2. 아예 다른 미술작품을 물어볼시 다음 작품 질문하기 버튼을 눌러주세요.
 
