@@ -11,9 +11,9 @@ git clone https://github.com/AI-docent/AI-docent.git
 cd AI-docent
 pip install -r requirements.txt
 ```
-pytorch 설치 방법
+pytorch 설치
 ```
-ㅔip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 ```
 
