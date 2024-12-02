@@ -5,7 +5,7 @@
   
 ## 가상환경 세팅
 
-### python 3.14.4, RTX 4060 Laptop 8GB  기준 입니다.
+python 3.14.4, RTX 4060 Laptop 8GB  기준 입니다.
 ```
 git clone https://github.com/AI-docent/AI-docent.git
 cd AI-docent
