@@ -17,6 +17,8 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 ```
 
+ffmpeg 설치 꼭 해주세요 !!
+
 ## 아키텍쳐
 <img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957">
 
