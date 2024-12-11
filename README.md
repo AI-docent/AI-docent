@@ -80,7 +80,18 @@ ffmpeg 설치 꼭 해주세요 !!
     Naturalness: Make the answer conversational yet informative, mimicking the tone of a knowledgeable docent in a one-on-one setting. Ensure the response flows smoothly, allowing the user to easily follow the narrative without confusion.
     Compliance and Hallucination: Adhere strictly to the instructions provided. Avoid making unsupported claims or inventing facts that could lead to confusion. Ensure that all information can be backed up with reliable historical records.
     Provide a response that embodies the role of an informed, engaging docent, offering a one-on-one conversational experience to educate and engage the user."     
-```
+  ```
++ **evaluation**
+  +평가기준 (1~5점)
+  Sensibleness: 사용자의 질문과 관련된 답변을 했는지
+  Correctness: Gpt의 대답이 사실에 기반하는지
+  Coherence: 언어가 문법적으로 올바른지
+  Naturalness: 답변이 일관되고 자연스러운지
+  Hallucination
+  +Object detection 모델 학습에 사용한 작품 79점에 대해 질문 후 답변 평가
+  | Sensibleness | Correctness | Coherence | Naturalness | Hallucination |
+  |--------------|-------------|-----------|-------------|---------------|
+  | 4.4050       | 4.2278      | 4.6203    | 4.5949      | 4.4359        |
 
 
 ## 주의할 점
