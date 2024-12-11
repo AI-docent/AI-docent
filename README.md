@@ -19,7 +19,7 @@
 - 개인 스마트폰·이어폰 활용 가능의 편리한 접근성
 
 ## 사용법
-<img width="400" alt="select_img" src="https://github.com/AI-docent/AI-docent/blob/main/img/select_img.png"><br>
+<img width="200" alt="select_img" src="https://github.com/AI-docent/AI-docent/blob/main/img/select_img.png"><br>
 1. Tour version<br>
 - 관람 동선 안내
 - 작품 설명 : 기본적인 작품 설명뿐만 아니라 작품에 대한 모든 실시간 정보를 토대로 사용자의 질문에 응답
@@ -88,6 +88,7 @@ ffmpeg 설치 꼭 해주세요 !!
   Coherence: 언어가 문법적으로 올바른지
   Naturalness: 답변이 일관되고 자연스러운지
   Hallucination
+  <br>
   +Object detection 모델 학습에 사용한 작품 79점에 대해 질문 후 답변 평가
   | Sensibleness | Correctness | Coherence | Naturalness | Hallucination |
   |--------------|-------------|-----------|-------------|---------------|
