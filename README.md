@@ -68,7 +68,7 @@ ffmpeg 설치 꼭 해주세요 !!
   + system : 도슨트 말투 + 상세 조건
   + user : 사용자 질문
   + assistant : 이전 GPT 답변
-+ **final Prompt
++ Final Prompt
   ```
   + You are an AI docent at the Louvre Museum, tasked with providing accurate, detailed, and engaging answer in Korean.
     This is a one-on-one conversation, so ensure your response:
