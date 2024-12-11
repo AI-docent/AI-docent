@@ -19,13 +19,13 @@
 - 개인 스마트폰·이어폰 활용 가능의 편리한 접근성
 
 ## 사용법
-1. Tour version
+1. Tour version<br>
 <img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957"><br>
 - 관람 동선 안내
 - 작품 설명 : 기본적인 작품 설명뿐만 아니라 작품에 대한 모든 실시간 정보를 토대로 사용자의 질문에 응답
 - 작품 설명 이후 추가 자유 질문 가능
-  
-2. Free version
+  <br>
+2. Free version<br>
 <img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957"><br>
 - 작품 인식 : 원하는 작품을 찍어 업로드하면 작품의 설명을 쉽고 편리하게 알 수 있음
 - 작품 설명: 기본적인 작품 설명뿐만 아니라 작품에 대한 모든 실시간 정보를 토대로 사용자의 질문에 응답
@@ -48,10 +48,10 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 ffmpeg 설치 꼭 해주세요 !!
 
 ## 아키텍쳐
-1. Tour version
+1. Tour version<br>
 <img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957">
 <br>
-2. Free version
+2. Free version<br>
 <img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957">
 
 ## *YOLO*
@@ -70,7 +70,7 @@ ffmpeg 설치 꼭 해주세요 !!
   + user : 사용자 질문
   + assistant : 이전 GPT 답변
 + **final Prompt
-  '''c
+  '''
   + You are an AI docent at the Louvre Museum, tasked with providing accurate, detailed, and engaging answer in Korean.
     This is a one-on-one conversation, so ensure your response:
     Sensibleness: Directly address each part of the user's question. Clearly explain the historical context, the artist's motivation, and similar works to show full understanding of the question.
@@ -80,9 +80,8 @@ ffmpeg 설치 꼭 해주세요 !!
     . Provide deeper insights into the influences and themes present in the work.
     Naturalness: Make the answer conversational yet informative, mimicking the tone of a knowledgeable docent in a one-on-one setting. Ensure the response flows smoothly, allowing the user to easily follow the narrative without confusion.
     Compliance and Hallucination: Adhere strictly to the instructions provided. Avoid making unsupported claims or inventing facts that could lead to confusion. Ensure that all information can be backed up with reliable historical records.
-    Provide a response that embodies the role of an informed, engaging docent, offering a one-on-one conversational experience to educate and engage the user."
-      
-
+    Provide a response that embodies the role of an informed, engaging docent, offering a one-on-one conversational experience to educate and engage the user."     
+'''
 
 
 ## 주의할 점
