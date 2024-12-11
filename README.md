@@ -3,7 +3,7 @@
 개인화된 AI 도슨트 챗봇 제작
 </div>
   
-## Notivation
+## Motivation
 기존 도슨트 투어/오디오 가이드의 한계
 - 일관성 부족: 도슨트에 따라 가이드의 품질이 달라짐
 - 시간의 제약: 정해진 시간에만 진행, 작품별 관람 시간 조정 불가
@@ -51,7 +51,7 @@ ffmpeg 설치 꼭 해주세요 !!
 <img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957">
 <br>
 2. Free version<br>
-<img width="400" alt="KakaoTalk_Photo_img.png" src="https://github.com/AI-docent/AI-docent/blob/main/img/KakaoTalk_Photo_img.png"><br>
+<img width="400" alt="KakaoTalk_Photo_img" src="https://github.com/AI-docent/AI-docent/blob/main/img/KakaoTalk_Photo_img.png"><br>
 
 ## *YOLO*
 + **Data** : 79 artworks in the Louvre Museum
