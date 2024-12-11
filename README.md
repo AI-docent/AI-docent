@@ -19,14 +19,13 @@
 - 개인 스마트폰·이어폰 활용 가능의 편리한 접근성
 
 ## 사용법
+<img width="400" alt="" scr="https://github.com/AI-docent/AI-docent/blob/main/img/select_img.png"><br>
 1. Tour version<br>
-<img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957"><br>
 - 관람 동선 안내
 - 작품 설명 : 기본적인 작품 설명뿐만 아니라 작품에 대한 모든 실시간 정보를 토대로 사용자의 질문에 응답
 - 작품 설명 이후 추가 자유 질문 가능
   <br>
 2. Free version<br>
-<img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957"><br>
 - 작품 인식 : 원하는 작품을 찍어 업로드하면 작품의 설명을 쉽고 편리하게 알 수 있음
 - 작품 설명: 기본적인 작품 설명뿐만 아니라 작품에 대한 모든 실시간 정보를 토대로 사용자의 질문에 응답
 - 작품 설명 이후 추가 자유 질문 가능
@@ -52,7 +51,7 @@ ffmpeg 설치 꼭 해주세요 !!
 <img width="400" alt="KakaoTalk_20241201_164254166" src="https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957">
 <br>
 2. Free version<br>
-<img width="400" alt="KakaoTalk_Photo_img" src="[https://github.com/user-attachments/assets/b819afe3-2994-455d-a62d-927a1d543957](https://github.com/AI-docent/AI-docent/blob/main/img/KakaoTalk_Photo_img.png">
+<img width="400" alt="KakaoTalk_Photo_img.png" src="https://github.com/AI-docent/AI-docent/blob/main/img/KakaoTalk_Photo_img.png"><br>
 
 ## *YOLO*
 + **Data** : 79 artworks in the Louvre Museum
